@@ -45,13 +45,16 @@ fun App() {
         var Identificacion: String by remember { mutableStateOf("") }
         var result: String by remember { mutableStateOf("") }
         val openDialog = remember { mutableStateOf(false) }
+        //Layout
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            //Logo
             Spacer(modifier = Modifier.height(100.dp))
             Image(painterResource("nlogo.png"), null, modifier = Modifier.scale(3.toFloat()))
 
             Spacer(modifier = Modifier.height(50.dp))
             Image(painterResource("logonombre.png"), null)
 
+            //Textbox Codigo
             Spacer(modifier = Modifier.height(80.dp))
             OutlinedTextField(
                 value = codigoEmpleado,
@@ -63,6 +66,7 @@ fun App() {
                 colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = Color(0,51,153), focusedLabelColor = Color(0,175,239))
             )
 
+            //TextBox Identificacion
             Spacer(modifier = Modifier.height(20.dp))
             OutlinedTextField(
                 value = Identificacion,
@@ -74,6 +78,7 @@ fun App() {
                 colors = TextFieldDefaults.outlinedTextFieldColors(focusedBorderColor = Color(0,51,153), focusedLabelColor = Color(0,175,239))
             )
 
+            //Boton Login
             Spacer(modifier = Modifier.height(20.dp))
             AnimatedVisibility(Identificacion.isNotEmpty() && codigoEmpleado.isNotEmpty(), enter = slideInHorizontally (animationSpec = tween(durationMillis = 400) )){
                 Button(onClick = {
@@ -90,10 +95,13 @@ fun App() {
                 }
             }
 
+            //Label login exitoso
             Spacer(modifier = Modifier.height(20.dp))
             AnimatedVisibility(result.isNotEmpty() && result != "null"){
                 Text(text = "$result")
             }
+
+            //Mostrar Error
             if(result.isNotEmpty()){
                 if(result == "null"){
                     AlertDialog(

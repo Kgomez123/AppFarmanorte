@@ -5,11 +5,16 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 
 class Requests {
+    //Creamos cliente Http
     private val client = HttpClient(){install(ContentNegotiation)}
 
     suspend fun login(codigo: String, id: String): String {
         var result = ""
+
+        //Hacemos request
         val response = client.get("https://plataforma.farmanorteonline.com/consultar-tercero-app?codigo=$codigo&identificacion=$id")
+        
+        //Jugamos con el resultado
         if(response.bodyAsText() != "null"){
             val empleado: Empleado = response.body()
             if(empleado.genero == 1){
