@@ -1,8 +1,9 @@
-import io.ktor.client.*
-import io.ktor.client.call.body
+
+import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.json.Json
 
 class Requests {
     //Creamos cliente Http
@@ -16,7 +17,7 @@ class Requests {
         
         //Jugamos con el resultado
         if(response.bodyAsText() != "null"){
-            val empleado: Empleado = response.body()
+            val empleado: Empleado = Json.decodeFromString(response.bodyAsText())
             if(empleado.genero == 1){
                 result = "Bienvenido ${empleado.nombres} ${empleado.apellidos}"
             }else{
@@ -27,5 +28,11 @@ class Requests {
         }
 
         return result
+    }
+
+    suspend fun pedidos(): Array<Pedidos> {
+        val response = client.get("https://plataforma.farmanorteonline.com/tercero-pedidos")
+        val pedidosresult: Array<Pedidos> = Json.decodeFromString<Array<Pedidos>>(response.bodyAsText())
+        return  pedidosresult
     }
 }

@@ -1,5 +1,5 @@
+
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.Image
@@ -17,12 +17,12 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,7 +32,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -41,6 +46,19 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun App() {
     MaterialTheme {
+        Navigator(screen = LoginScreen())//{navigator ->
+            //FadeTransition(navigator)
+            //SlideTransition(navigator)
+            //ScaleTransition(navigator)
+        //}
+    }
+}
+
+class LoginScreen:Screen {
+    @OptIn(ExperimentalResourceApi::class)
+    @Composable
+    override fun Content() {
+        val navigator:Navigator = LocalNavigator.currentOrThrow
         var codigoEmpleado: String by remember { mutableStateOf("") }
         var Identificacion: String by remember { mutableStateOf("") }
         var result: String by remember { mutableStateOf("") }
@@ -90,7 +108,8 @@ fun App() {
                         }.onFailure {
                             result = it.message.toString()
                         }
-                    }}, shape = RoundedCornerShape(20.dp), contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp), colors = ButtonDefaults.buttonColors(backgroundColor = Color(0,51,153), contentColor = Color(0,175,239))) {
+                    }
+                }, shape = RoundedCornerShape(20.dp), contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp), colors = ButtonDefaults.buttonColors(backgroundColor = Color(0,51,153), contentColor = Color(0,175,239))) {
                     Text(text = "Continuar")
                 }
             }
@@ -99,6 +118,10 @@ fun App() {
             Spacer(modifier = Modifier.height(20.dp))
             AnimatedVisibility(result.isNotEmpty() && result != "null"){
                 Text(text = "$result")
+                MainScope().launch {
+                    delay(3000)
+                    navigator?.push(MainScreen())
+                }
             }
 
             //Mostrar Error
@@ -125,6 +148,68 @@ fun App() {
                             }
                         }
                     )
+                }
+            }
+        }
+    }
+}
+
+class MainScreen:Screen {
+    @OptIn(ExperimentalResourceApi::class)
+    @Composable
+    override fun Content() {
+        val navigator:Navigator = LocalNavigator.currentOrThrow
+        var pedidos = remember { mutableStateListOf<Pedidos>() }
+        val error = remember { mutableStateOf(false) }
+        val consultado = remember { mutableStateOf(false) }
+        val texto = remember { mutableStateOf(false) }
+        val openDialog = remember { mutableStateOf(false) }
+        if(!consultado.value){
+            MainScope().launch {
+                kotlin.runCatching {
+
+                    Requests().pedidos()
+                }.onSuccess {
+                    for (its in it){
+                        pedidos += its
+                    }
+                    consultado.value = true
+                    texto.value = true
+                }.onFailure {
+                    error.value = true
+                }
+            }
+        }
+
+        if(error.value){
+            AlertDialog(
+                onDismissRequest = {
+                    openDialog.value = false
+                },
+                title = {
+                    Text(text = "Error")
+                },
+                text = {
+                    Text("No se ha podido consultar la información, intentelo nuevamente")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            openDialog.value = false
+                            error.value = false
+                            navigator.pop()
+                        }) {
+                        Text("Confirmar")
+                    }
+                }
+            )
+        }
+
+        if(texto.value){
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                for(pedido in pedidos){
+                    Spacer(modifier = Modifier.height(50.dp))
+                    Text(pedido.toString())
                 }
             }
         }
