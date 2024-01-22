@@ -1,4 +1,3 @@
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -22,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -148,68 +146,6 @@ class LoginScreen:Screen {
                             }
                         }
                     )
-                }
-            }
-        }
-    }
-}
-
-class MainScreen:Screen {
-    @OptIn(ExperimentalResourceApi::class)
-    @Composable
-    override fun Content() {
-        val navigator:Navigator = LocalNavigator.currentOrThrow
-        var pedidos = remember { mutableStateListOf<Pedidos>() }
-        val error = remember { mutableStateOf(false) }
-        val consultado = remember { mutableStateOf(false) }
-        val texto = remember { mutableStateOf(false) }
-        val openDialog = remember { mutableStateOf(false) }
-        if(!consultado.value){
-            MainScope().launch {
-                kotlin.runCatching {
-
-                    Requests().pedidos()
-                }.onSuccess {
-                    for (its in it){
-                        pedidos += its
-                    }
-                    consultado.value = true
-                    texto.value = true
-                }.onFailure {
-                    error.value = true
-                }
-            }
-        }
-
-        if(error.value){
-            AlertDialog(
-                onDismissRequest = {
-                    openDialog.value = false
-                },
-                title = {
-                    Text(text = "Error")
-                },
-                text = {
-                    Text("No se ha podido consultar la información, intentelo nuevamente")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            openDialog.value = false
-                            error.value = false
-                            navigator.pop()
-                        }) {
-                        Text("Confirmar")
-                    }
-                }
-            )
-        }
-
-        if(texto.value){
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                for(pedido in pedidos){
-                    Spacer(modifier = Modifier.height(50.dp))
-                    Text(pedido.toString())
                 }
             }
         }
