@@ -91,5 +91,7 @@ android {
 }
 dependencies {
     implementation(libs.androidx.appcompat)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.preference.ktx)
 }
 

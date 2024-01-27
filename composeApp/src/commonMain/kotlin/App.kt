@@ -61,6 +61,7 @@ class LoginScreen:Screen {
         var Identificacion: String by remember { mutableStateOf("") }
         var result: String by remember { mutableStateOf("") }
         val openDialog = remember { mutableStateOf(false) }
+
         //Layout
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             //Logo
@@ -115,10 +116,10 @@ class LoginScreen:Screen {
             //Label login exitoso
             Spacer(modifier = Modifier.height(20.dp))
             AnimatedVisibility(result.isNotEmpty() && result != "null"){
-                Text(text = "$result")
+                Text(text = result)
                 MainScope().launch {
                     delay(3000)
-                    navigator?.push(MainScreen())
+                    navigator.push(MainScreen())
                 }
             }
 

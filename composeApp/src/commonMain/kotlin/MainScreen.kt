@@ -1,4 +1,3 @@
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +36,7 @@ class MainScreen: Screen {
     @Composable
     override fun Content() {
         val navigator: Navigator = LocalNavigator.currentOrThrow
-        var pedidos = remember { mutableStateListOf<Pedidos>() }
+        val pedidos = remember { mutableStateListOf<Pedidos>() }
         val error = remember { mutableStateOf(false) }
         val consultado = remember { mutableStateOf(false) }
         val texto = remember { mutableStateOf(false) }
@@ -45,7 +44,6 @@ class MainScreen: Screen {
         if(!consultado.value){
             MainScope().launch {
                 kotlin.runCatching {
-
                     Requests().pedidos()
                 }.onSuccess {
                     for (its in it){
@@ -85,7 +83,7 @@ class MainScreen: Screen {
 
         if(texto.value){
             Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Estado 1")
+                Text("Mis Pedidos")
                 for(pedido in pedidos){
                     if(pedido.estado == 1){
                         Spacer(modifier = Modifier.height(50.dp))
@@ -94,7 +92,7 @@ class MainScreen: Screen {
                             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                                 Button(onClick = {
                                     MainScope().launch {
-                                        navigator?.push(DetallesPedido(pedido))
+                                        navigator.push(DetallesPedido(pedido))
                                     }
                                 }, shape = CircleShape, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0,51,153))) {
                                     Icon(
@@ -110,7 +108,7 @@ class MainScreen: Screen {
                 }
 
                 Spacer(modifier = Modifier.height(50.dp))
-                Text("Estado 2")
+                Text("Pedidos Entregados")
                 for(pedido in pedidos){
                     if(pedido.estado == 2){
                         Spacer(modifier = Modifier.height(50.dp))
@@ -119,7 +117,7 @@ class MainScreen: Screen {
                             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                                 Button(onClick = {
                                     MainScope().launch {
-                                        navigator?.push(DetallesPedido(pedido))
+                                        navigator.push(DetallesPedido(pedido))
                                     }
                                 }, shape = CircleShape, colors = ButtonDefaults.buttonColors(backgroundColor = Color(0,51,153))) {
                                     Icon(

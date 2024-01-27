@@ -11,6 +11,7 @@ class Requests {
     suspend fun login(codigo: String, id: String): String {
         var result = ""
 
+
         //Hacemos request
         val response = client.get("https://plataforma.farmanorteonline.com/consultar-tercero-app?codigo=$codigo&identificacion=$id")
         
@@ -25,13 +26,16 @@ class Requests {
         }else{
             result = response.bodyAsText()
         }
-
         return result
     }
 
     suspend fun pedidos(): Array<Pedidos> {
         val response = client.get("https://plataforma.farmanorteonline.com/tercero-pedidos")
-        val pedidosresult: Array<Pedidos> = Json.decodeFromString<Array<Pedidos>>(response.bodyAsText())
-        return  pedidosresult
+        return Json.decodeFromString(response.bodyAsText())
+    }
+
+    suspend fun UploadLocation(latitud: Double, longitud: Double): Boolean{
+        val response = client.get("https://plataforma.farmanorteonline.com/ubicacion-registrar-app?codigo=1087&latitud=$latitud&longitud=$longitud")
+        return true
     }
 }
